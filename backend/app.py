@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ class Song(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     artist = db.Column(db.String(100), nullable=False)
-    file_path = db.Column(db.String(200), nullable=False)
+    file_data = db.Column(db.LargeBinary, nullable=False)
 
 # Create the database tables
 with app.app_context():
@@ -32,16 +32,17 @@ def get_songs():
     songs = Song.query.all()
     return jsonify([{'title': song.title, 'artist': song.artist} for song in songs])
 
-@app.route('/api/add_test_song')
-def add_test_song():
-    test_song = Song(
-        title='Test Song',
-        artist='Test Artist',
-        file_path='/path/to/test/song.mp3'
-    )
-    db.session.add(test_song)
+@app.route('/api/upload_song', methods=['POST'])
+def upload_song():
+    title=request.form['title']
+    artist=request.form['artist']
+    file=request.files['file']
+    file_data = file.read();
+
+    song = Song(title=title, artist=artist, file_data=file_data)
+    db.session.add(song)
     db.session.commit()
-    return jsonify({'message': 'Test song added'})
+    return jsonify({'message': 'song added'})
 
 if __name__ == '__main__':
     app.run(debug=True)

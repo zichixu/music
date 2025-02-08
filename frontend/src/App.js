@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import UploadSongForm from './components/UploadSongForm';
 
 function App() {
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/songs')  // Updated URL
+    axios.get('/api/songs')
       .then((response) => {
-        console.log('Fetched songs:', response.data); // Debugging line
+        console.log('Fetched songs:', response.data);
         setSongs(response.data);
       })
       .catch((error) => {
@@ -18,6 +19,7 @@ function App() {
   return (
     <div>
       <h1>Music Sharing App</h1>
+      <UploadSongForm />
       <ul>
         {songs.map((song, index) => (
           <li key={index}>
